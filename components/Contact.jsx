@@ -38,7 +38,7 @@ export default function Contact() {
     setError("");
     setSubmitting(true);
     try {
-      const res = await fetch("/api/jsk/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

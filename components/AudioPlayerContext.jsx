@@ -64,7 +64,7 @@ export function AudioPlayerProvider({ children }) {
 
     try {
       const res = await fetch(
-        `/api/jsk/token?slug=${encodeURIComponent(track.slug)}`,
+        `/api/token?slug=${encodeURIComponent(track.slug)}`,
       );
       if (!res.ok) throw new Error("Token request failed");
       const { url } = await res.json();

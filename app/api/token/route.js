@@ -18,7 +18,7 @@ export async function GET(req) {
   }
 
   const { token, expires } = signToken(slug);
-  const url = `/api/jsk/audio/${slug}?token=${token}&expires=${expires}`;
+  const url = `/api/audio/${slug}?token=${token}&expires=${expires}`;
 
   return NextResponse.json({ url });
 }
