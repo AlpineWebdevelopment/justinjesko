@@ -3,39 +3,7 @@ import useScrollReveal from "@/lib/useScrollReveal";
 import useParallaxBackground from "@/lib/useParallaxBackground";
 import SectionLabel from "./SectionLabel";
 import WaveformPlayer from "./WaveformPlayer";
-
-const SETS = [
-  {
-    id: 1,
-    title: "First Set Ever",
-    artist: "Justin Jesko",
-    duration: "58 min",
-    date: "Jan 2026",
-    slug: "set1",
-    cover: "/jesko/images/set01.jpg",
-    lngth: 3467,
-  },
-  {
-    id: 2,
-    title: "Second Set",
-    artist: "Justin Jesko",
-    duration: "56 min",
-    date: "Feb 2026",
-    slug: "set2",
-    cover: "/jesko/images/set02.jpg",
-    lngth: 3359,
-  },
-  {
-    id: 3,
-    title: "Third Set",
-    artist: "Justin Jesko",
-    duration: "63 min",
-    date: "Apr 2026",
-    slug: "set3",
-    cover: "/jesko/images/set03.jpg",
-    lngth: 3772,
-  },
-];
+import { SETS } from "@/lib/tracks";
 
 export default function DJSets() {
   const [ref, vis] = useScrollReveal(0.5);
@@ -83,7 +51,7 @@ export default function DJSets() {
           <div className="space-y-2">
             {SETS.map((set, i) => (
               <div
-                key={set.id}
+                key={set.slug}
                 className={`bg-black/2 rounded-xl px-5 py-2 transition-all duration-700 hover:bg-black/4 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   vis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}

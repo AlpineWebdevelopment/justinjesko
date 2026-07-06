@@ -3,49 +3,7 @@ import useScrollReveal from "@/lib/useScrollReveal";
 import useParallaxBackground from "@/lib/useParallaxBackground";
 import SectionLabel from "./SectionLabel";
 import WaveformPlayer from "./WaveformPlayer";
-
-const TRACKS = [
-  {
-    id: 1,
-    title: "BUTTERFLIES",
-    artist: "Martin Garrix",
-    slug: "butterflies",
-    cover: "/jesko/images/butterflies.jpg",
-    lngth: 270,
-  },
-  {
-    id: 2,
-    title: "GRAVITY",
-    artist: "Martin Garrix",
-    slug: "gravity",
-    cover: "/jesko/images/gravity.jpg",
-    lngth: 342,
-  },
-  {
-    id: 3,
-    title: "OUR TIME",
-    artist: "Martin Garrix",
-    slug: "ourtime",
-    cover: "/jesko/images/ourtime.jpg",
-    lngth: 240,
-  },
-  {
-    id: 4,
-    title: "SOMETHING",
-    artist: "Martin Garrix",
-    slug: "something",
-    cover: "/jesko/images/something.jpg",
-    lngth: 223,
-  },
-  {
-    id: 5,
-    title: "VODOO",
-    artist: "Martin Garrix",
-    slug: "vodoo",
-    cover: "/jesko/images/vodoo.jpg",
-    lngth: 245,
-  },
-];
+import { PREVIEWS as TRACKS } from "@/lib/tracks";
 
 export default function Previews() {
   const [ref, vis] = useScrollReveal(0.4);
@@ -94,7 +52,7 @@ export default function Previews() {
           <div className="divide-y divide-black/8">
             {TRACKS.map((track, i) => (
               <div
-                key={track.id}
+                key={track.slug}
                 className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   vis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}

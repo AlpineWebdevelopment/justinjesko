@@ -1,8 +1,13 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useAudioPlayer } from "./AudioPlayerContext";
+import { getBySlug } from "@/lib/tracks";
 
 export default function MiniPlayer() {
+  const [copied, setCopied] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const {
     currentTrack,
     playing,
@@ -15,6 +20,18 @@ export default function MiniPlayer() {
     seek,
     close,
   } = useAudioPlayer();
+
+  // Close the mobile options popover when tapping/clicking outside it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [menuOpen]);
 
   if (!currentTrack) return null;
 
@@ -38,6 +55,113 @@ export default function MiniPlayer() {
   };
 
   const toggleMute = () => setVolume(volume > 0 ? 0 : 0.5);
+
+  const shareTrack = async () => {
+    const item = getBySlug(currentTrack.slug);
+    if (!item) return;
+    const url = `${window.location.origin}/shared/${item.ref}`;
+    // Mobile: native share sheet (WhatsApp, Instagram, Messages...).
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: currentTrack.title,
+          text: `${currentTrack.title} — ${currentTrack.artist}`,
+          url,
+        });
+      } catch {
+        /* user dismissed the share sheet — nothing to do */
+      }
+      return;
+    }
+    // Desktop fallback: copy the link.
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard unavailable — ignore */
+    }
+  };
+
+  const shareable = !!getBySlug(currentTrack.slug);
+
+  const volumeIcon =
+    volume === 0 ? (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <line x1="23" y1="9" x2="17" y2="15" />
+        <line x1="17" y1="9" x2="23" y2="15" />
+      </svg>
+    ) : volume < 0.5 ? (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+      </svg>
+    ) : (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+      </svg>
+    );
+
+  const shareIcon = copied ? (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  ) : (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  );
 
   return (
     <div
@@ -121,50 +245,7 @@ export default function MiniPlayer() {
                        text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             aria-label={volume === 0 ? "Unmute" : "Mute"}
           >
-            {volume === 0 ? (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <line x1="23" y1="9" x2="17" y2="15" />
-                <line x1="17" y1="9" x2="23" y2="15" />
-              </svg>
-            ) : volume < 0.5 ? (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              </svg>
-            ) : (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-              </svg>
-            )}
+            {volumeIcon}
           </button>
           <div
             onClick={handleVolume}
@@ -180,6 +261,90 @@ export default function MiniPlayer() {
               style={{ width: `${volume * 100}%` }}
             />
           </div>
+        </div>
+
+        {/* Share — desktop inline */}
+        {shareable && (
+          <button
+            onClick={shareTrack}
+            className="hidden sm:flex shrink-0 w-8 h-8 items-center justify-center rounded-full
+                       text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label={copied ? "Link copied" : "Share this track"}
+            title={copied ? "Link copied" : "Share"}
+          >
+            {shareIcon}
+          </button>
+        )}
+
+        {/* More — mobile: share + volume tucked into an upward popover */}
+        <div ref={menuRef} className="relative shrink-0 sm:hidden">
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            className="w-8 h-8 flex items-center justify-center rounded-full
+                       text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="More options"
+            aria-haspopup="true"
+            aria-expanded={menuOpen}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="1.7" />
+              <circle cx="12" cy="12" r="1.7" />
+              <circle cx="12" cy="19" r="1.7" />
+            </svg>
+          </button>
+
+          {menuOpen && (
+            <div
+              className="absolute bottom-full right-0 mb-3 w-56 origin-bottom-right
+                         rounded-xl border border-white/10 bg-black/95 backdrop-blur-md
+                         p-3 shadow-2xl"
+              role="menu"
+            >
+              {/* Volume */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleMute}
+                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full
+                             text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label={volume === 0 ? "Unmute" : "Mute"}
+                >
+                  {volumeIcon}
+                </button>
+                <div
+                  onClick={handleVolume}
+                  className="flex-1 h-2 bg-white/15 rounded-full overflow-hidden cursor-pointer"
+                  role="slider"
+                  aria-label="Volume"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(volume * 100)}
+                >
+                  <div
+                    className="h-full bg-white/70 rounded-full"
+                    style={{ width: `${volume * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Share */}
+              {shareable && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    shareTrack();
+                  }}
+                  className="mt-2 w-full flex items-center gap-3 rounded-lg px-2 py-2
+                             text-left text-sm text-white/80 hover:bg-white/10 transition-colors cursor-pointer"
+                  role="menuitem"
+                >
+                  <span className="shrink-0 w-6 flex justify-center">
+                    {shareIcon}
+                  </span>
+                  {copied ? "Copied" : "Share"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Close */}
