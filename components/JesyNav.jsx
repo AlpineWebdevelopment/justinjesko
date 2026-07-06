@@ -215,8 +215,8 @@ export default function Nav() {
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 flex items-end justify-between gap-4 text-xs md:text-sm uppercase tracking-widest px-6 md:px-16 pb-6">
-          <div className="flex gap-4 md:gap-8">
+        <div className="shrink-0 flex flex-col items-center lg:flex-row lg:items-end lg:justify-between gap-4 md:gap-4 text-xs md:text-sm uppercase tracking-widest px-6 md:px-16 pb-6">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 md:gap-8">
             {footerLinks.map((l) => (
               <Link
                 key={l.label}
@@ -228,7 +228,7 @@ export default function Nav() {
               </Link>
             ))}
           </div>
-          <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 md:gap-8">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 md:justify-end md:gap-8">
             {socials.map((s) => (
               <a
                 key={s.label}

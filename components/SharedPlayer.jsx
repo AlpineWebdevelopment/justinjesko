@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useAudioPlayer } from "./AudioPlayerContext";
 
 const ACCENT = "#C3FF00";
+// Signature entrance easing shared with the landing page (Hero, sections).
+const EASE = "cubic-bezier(0.16,1,0.3,1)";
 
 // Bespoke, large-format player for the /shared/<ref> landing hero. Shares the
 // global audio context (and the bottom MiniPlayer) with the rest of the site,
@@ -134,9 +136,9 @@ export default function SharedPlayer({ item }) {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm">
+    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/3 backdrop-blur-sm">
       {/* Blurred cover ambiance behind the card */}
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-40">
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
         <Image
           src={item.cover}
           alt=""
@@ -145,12 +147,18 @@ export default function SharedPlayer({ item }) {
           aria-hidden
           className="scale-125 object-cover blur-3xl"
         />
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/35" />
       </div>
+
+      {/* Thin accent hairline along the top edge */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent-jesko/50 to-transparent" />
 
       <div className="flex flex-col gap-8 p-6 sm:p-10 md:flex-row md:items-center">
         {/* Cover */}
-        <div className="relative mx-auto aspect-square w-56 shrink-0 overflow-hidden rounded-2xl bg-white/5 shadow-2xl sm:w-64 md:mx-0">
+        <div
+          className="group relative mx-auto aspect-square w-56 shrink-0 overflow-hidden rounded-2xl bg-white/5 shadow-2xl ring-1 ring-white/10 sm:w-64 md:mx-0"
+          style={{ animation: `fadeInUp 1s 0.1s both ${EASE}` }}
+        >
           <Image
             src={item.cover}
             alt={item.title}
@@ -163,49 +171,77 @@ export default function SharedPlayer({ item }) {
 
         {/* Meta + controls */}
         <div className="min-w-0 flex-1">
-          <span className="inline-block rounded-full border border-accent-jesko/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-accent-jesko">
-            {item.kind === "set" ? "DJ Set" : "Preview"}
-          </span>
+          {/* Kind label — SectionLabel motif from the landing page */}
+          <div
+            className="flex items-center gap-3"
+            style={{ animation: `fadeInUp 0.9s 0.2s both ${EASE}` }}
+          >
+            <span className="h-px w-8 bg-accent-jesko/50" />
+            <span className="font-body text-xs font-[450] uppercase tracking-[0.3em] text-accent-jesko">
+              {item.kind === "set" ? "DJ Set" : "Preview"}
+            </span>
+          </div>
 
-          <h1 className="mt-4 truncate font-display text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl">
+          <h1
+            className="mt-4 font-display text-3xl font-bold leading-[1.05] tracking-tight text-white sm:text-4xl md:text-5xl"
+            style={{ animation: `fadeInUp 1s 0.3s both ${EASE}` }}
+          >
             {item.title}
           </h1>
-          <p className="mt-2 font-seriff text-lg font-medium text-white/50">
+          <p
+            className="mt-3 font-seriff sm:text-lg font-medium text-white/50"
+            style={{ animation: `fadeInUp 1s 0.4s both ${EASE}` }}
+          >
             {item.artist}
-            {item.date ? ` · ${item.date}` : ""}
+            <i>{item.date ? ` · ${item.date}` : ""}</i>
           </p>
 
           {/* Waveform */}
-          <div
-            className="relative mt-8 cursor-pointer"
-            onClick={onSeek}
-            role="slider"
-            aria-label="Seek"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(progress * 100)}
-          >
-            <canvas ref={canvasRef} className="h-16 w-full sm:h-20" />
-          </div>
-          <div className="mt-1 flex justify-between font-mono text-xs text-white/40">
-            <span>{fmt(currentTime)}</span>
-            <span>{duration < 1 ? fmt(item.lngth) : fmt(duration)}</span>
+          <div style={{ animation: `fadeInUp 1s 0.5s both ${EASE}` }}>
+            <div
+              className="relative mt-8 cursor-pointer"
+              onClick={onSeek}
+              role="slider"
+              aria-label="Seek"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(progress * 100)}
+            >
+              <canvas ref={canvasRef} className="h-16 w-full sm:h-20" />
+            </div>
+            <div className="mt-1 flex justify-between font-mono text-xs tabular-nums text-white/40">
+              <span>{fmt(currentTime)}</span>
+              <span>{duration < 1 ? fmt(item.lngth) : fmt(duration)}</span>
+            </div>
           </div>
 
           {/* Buttons */}
-          <div className="mt-7 flex items-center gap-3">
+          <div
+            className="mt-7 flex items-center gap-3"
+            style={{ animation: `fadeInUp 1s 0.6s both ${EASE}` }}
+          >
             <button
               onClick={() => toggle(track)}
-              className="flex h-14 items-center gap-3 rounded-full bg-accent-jesko px-7 font-display font-bold text-black transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+              className="flex h-14 items-center gap-3 rounded-full bg-accent-jesko px-7 font-display font-bold uppercase tracking-wide text-black transition-transform hover:scale-105 active:scale-95 cursor-pointer"
               aria-label={playing ? "Pause" : "Play"}
             >
               {playing ? (
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                >
                   <rect x="3" y="2" width="4" height="12" rx="1" />
                   <rect x="9" y="2" width="4" height="12" rx="1" />
                 </svg>
               ) : (
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                >
                   <path d="M4 2.5v11l9-5.5z" />
                 </svg>
               )}
@@ -214,19 +250,37 @@ export default function SharedPlayer({ item }) {
 
             <button
               onClick={copyLink}
-              className="flex h-14 items-center gap-2 rounded-full border border-white/20 px-6 font-body text-sm font-medium text-white transition-colors hover:border-white/40 hover:bg-white/5 cursor-pointer"
+              className="flex h-14 items-center gap-2 rounded-full border border-white/20 px-6 font-body text-sm font-medium text-white transition-colors hover:border-accent-jesko hover:text-accent-jesko cursor-pointer"
               aria-label="Copy share link"
             >
               {copied ? (
                 <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                   Copied
                 </>
               ) : (
                 <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                   </svg>
